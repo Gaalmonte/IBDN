@@ -34,10 +34,15 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
         this.load.image('bg_asset','bg.png');
         this.load.image('platform_asset','platforms.png');
-        this.load.spritesheet('player_asset','player.png',{
-            frameWidth: 32,
-            frameHeight: 32
-        });
+        this.load.image('player_asset','ship.png')
+        // this.load.spritesheet('player_asset','player.png',{
+        //     frameWidth: 32,
+        //     frameHeight: 42
+        // });
+        // this.load.spritesheet('player_asset','player.png',{
+        //     frameWidth: 425,
+        //     frameHeight: 500
+        // });
         this.load.image('enemy_asset','enemy.png');
         this.load.image('star_asset','star.png')
     }
