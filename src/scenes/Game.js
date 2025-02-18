@@ -40,10 +40,28 @@ export class Game extends Scene {
         this.borderSpeed = 0.5;
 
         // Player
-        player = this.physics.add.sprite(100, 450, 'player_asset');
-        player.setBounce(0);
-        player.setCollideWorldBounds(true);
-        player.body.setAllowGravity(false);
+        this.anims.create({
+            key: 'walk-down',
+            frames: this.anims.generateFrameNumbers('player_asset', { start:4, end:7}),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walk-up',
+            frames: this.anims.generateFrameNumbers('player_asset',{ start:0, end:3}),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'walk-side',
+            frames: this.anims.generateFrameNumbers('player_asset', {start:8,end:11}),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.player = this.physics.add.sprite(100,450,'player_asset')
+        this.player.setBounce(0);
+        this.player.setCollideWorldBounds(true);
+        this.player.body.setAllowGravity(false);
 
 
         // Camera
@@ -63,22 +81,28 @@ export class Game extends Scene {
 
         // Stars
         this.stars = this.physics.add.group()
-        this.spawnStars(5);
-
-        this.stars.children.iterate((star) => {
-            star.setBounceY(Phaser.Math.FloatBetween(0.4,0.8));
-            star.setVelocityX(-150);
-        });
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.spawnStars,
+            callbackScope: this,
+            loop: true
+        })
 
         // Colliders
         this.physics.add.overlap(player,this.enemies, getHit, null, this);
         this.physics.add.overlap(player, this.stars, collectStars, null, this);
 
         // Lives
-        livesText = this.add.text(16, 16, ' Lives: 3 ', { fontSize: '32px', fill: '#000' });
-        pointsText = this.add.text(16, 40, ' Points: 0 ', { fontSize: '32px', fill: '#000' })
+        livesText = this.add.text(870, 20, ' Lives: 3 ', { fontSize: '32px', fill: '#ffffff', fontFamily: 'Arial Black', stroke: '#000000', strokeThickness: 8 });
+        pointsText = this.add.text(12, 20, ' Points: 0 ', { fontSize: '32px', fill: '#ffffff', fontFamily: 'Arial Black', stroke: '#000000', strokeThickness: 8 })
     }
     update() {
+        this.stars.children.iterate((star) => {
+            if (star && star.x < -star.width){
+                star.destroy();
+            }
+        });
+
         this.updateBackground();
         this.updatePlatforms();
         this.updatePlayerControls();
@@ -129,25 +153,34 @@ export class Game extends Scene {
 
         // Left && Right
         if (cursors.left.isDown) {
-            player.setVelocityX(-speed);
+            this.player.setVelocityX(-speed);
+            this.player.anims.play('walk-side',true);
+            this.player.setFlipX(true);
         }
         else if (cursors.right.isDown) {
-            player.setVelocityX(+speed);
+            this.player.setVelocityX(+speed);
+            this.player.anims.play('walk-side',true);
+            this.player.setFlipX(false);
         }
         else {
-            player.setVelocityX(0);
+            this.player.setVelocityX(0);
+            this.player.anims.stop();
+
         }
 
         // Up && Down
         if (cursors.up.isDown) {
-            player.setVelocityY(-speed);
+            this.player.setVelocityY(-speed);
+            this.player.anims.play('walk-up',true);
         }
         else if (cursors.down.isDown) {
-            player.setVelocityY(speed);
+            this.player.setVelocityY(speed);
+            this.player.anims.play('walk-down',true);
         }
 
         else {
-            player.setVelocityY(0);
+            this.player.setVelocityY(0);
+            this.player.anims.stop
         }
     }
 
@@ -162,13 +195,10 @@ export class Game extends Scene {
     }
 
     spawnStars(count) {
-        for (let i = 0; i < count; i++) {
-            let x = Phaser.Math.Between(800, 1600);
-            let y = Phaser.Math.Between(50, this.scale.height - 50);
-    
-            let star = this.stars.create(x, y, 'star_asset');
-            star.setVelocityX(-100); // Move left
-        }
+        let yPosition = Phaser.Math.Between(50, this.scale.height - 50);
+        let star = this.stars.create(this.scale.width, yPosition, 'star_asset');
+        star.setVelocityX(-200);
+        star.setCollideWorldBounds(false);
     }
 
     updateEnemies() {
@@ -193,16 +223,29 @@ export class Game extends Scene {
 function getHit(player, enemies) {
     enemies.disableBody(true, true);
     player.setTint(0xff0000);
-    this.time.delayedCall(500, () => {
-        player.clearTint()
-    })
+    let flashCount = 5;
+    let flashEvent = this.time.addEvent({
+        delay:100,
+        repeat:flashCount -1,
+        callback: () => {
+            player.setTint(player.tintTopLeft === 0xFF0000 ? 0XFFFFFF : 0XFF0000);
+        },
+        callbackScope: this,
+        onComplete: () => {
+            player.setTint(0xFFFFFF);
+        }
+    });
     lives -= 1;
     livesText.setText(' Lives: ' + lives);
     // Game Over
     if (lives == 0) {
         lives = 3;
         this.physics.pause();
-        this.scene.start('GameOver')
+        this.cameras.main.fadeOut(1000, 0, 0, 0);
+        this.time.delayedCall(1000, () => {
+        this.scene.start('GameOver');
+        });
+        
     };
 }
 function collectStars(player, stars) {
