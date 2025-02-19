@@ -49,4 +49,4 @@ This project is licensed under the **MIT License**—free to play, modify, and s
 
 ---
 
-🔥 **Built in just 10 hours** to prove that experience **matters**! 
+🔥 **Built in just 6 hours** to prove that experience **matters**! 
