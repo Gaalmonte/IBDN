@@ -3,6 +3,7 @@
 ## 🌟 About the Game
 
 **<span style="font-size: 1.5em;">IBDN</span>** is a fast-paced arcade game where you pilot a spaceship, dodging meteors and collecting stars for points. Built in **10 hours** as a self-challenge, this game showcases how experience in the tech industry can make game development feel like a **day-and-night** difference compared to starting out.
+Deployed Here: https://ibdn.netlify.app/
 
 ## 🎮 Gameplay
 
