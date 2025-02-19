@@ -26,36 +26,21 @@ export class Game extends Scene {
         this.topBorder2 = this.add.image(this.topBorder1.width, 0, "platform_asset").setOrigin(0, 0).setDisplaySize(platformWidth, borderHeight);
         this.topBorder1.setTint(0x800080);
         this.topBorder2.setTint(0x800080);
+
         // Bottom Platform
         this.bottomBorder1 = this.add.image(0, this.scale.height - borderHeight, 'platform_asset').setOrigin(0, 0).setDisplaySize(platformWidth, borderHeight);
         this.bottomBorder2 = this.add.image(this.bottomBorder1.width, this.scale.height - borderHeight, "platform_asset").setOrigin(0, 0).setDisplaySize(platformWidth, borderHeight);
         this.bottomBorder1.setTint(0x800080);
         this.bottomBorder2.setTint(0x800080);
+
         // Platform Speed
         this.borderSpeed = 0.5;
 
-        // Player
-        // this.anims.create({
-        //     key: 'walk-down',
-        //     frames: this.anims.generateFrameNumbers('player_asset', { start: 0, end: 4 }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
-    
-        // this.anims.create({
-        //     key: 'walk-up',
-        //     frames: this.anims.generateFrameNumbers('player_asset', { start: 4, end: 9 }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
-    
-        // this.anims.create({
-        //     key: 'walk-side',
-        //     frames: this.anims.generateFrameNumbers('player_asset', { start: 10, end: 14 }),
-        //     frameRate: 10,
-        //     repeat: -1
-        // });
+        // Music
+        this.gameMusic = this.sound.add('game_music', {loop:true, volume: 0.5});
+        this.gameMusic.play();
 
+        // Player
         this.player = this.physics.add.sprite(100, 450, 'player_asset');
         // this.player.setBounce(0);
         this.player.setCollideWorldBounds(true);
@@ -91,9 +76,6 @@ export class Game extends Scene {
     }
 
     update() {
-        // const debugGraphics = this.add.graphics();
-        // debugGraphics.fillStyle(0xff0000, 0.5);
-        // debugGraphics.fillRect(this.player.x,this.player.y, 50,50);
         this.stars.children.iterate((star) => {
             if (star && star.x < -star.width) {
                 star.destroy();
@@ -216,6 +198,7 @@ export class Game extends Scene {
     }
 
     getHit(player, enemy) {
+        this.sound.play('meteor_hit',{volume:0.7});
         enemy.disableBody(true, true);
         player.setTint(0xff0000);
         let flashCount = 5;
@@ -236,6 +219,8 @@ export class Game extends Scene {
         if (this.lives == 0) {
             this.lives = 3;
             this.physics.pause();
+            this.gameMusic.stop();
+            this.sound.play('game_over_music', {volume:0.6});
             this.cameras.main.fadeOut(1000, 0, 0, 0);
             this.time.delayedCall(1000, () => {
                 this.scene.start('GameOver');
@@ -244,6 +229,7 @@ export class Game extends Scene {
     }
 
     collectStars(player, star) {
+        this.sound.play('star_collect', {volume: 0.7});
         star.disableBody(true, true);
         player.setTint(0xFFFF00);
         this.time.delayedCall(500, () => {

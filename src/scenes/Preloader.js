@@ -34,17 +34,15 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
         this.load.image('bg_asset','bg.png');
         this.load.image('platform_asset','platforms.png');
-        this.load.image('player_asset','ship.png')
-        // this.load.spritesheet('player_asset','player.png',{
-        //     frameWidth: 32,
-        //     frameHeight: 42
-        // });
-        // this.load.spritesheet('player_asset','player.png',{
-        //     frameWidth: 425,
-        //     frameHeight: 500
-        // });
+        this.load.image('player_asset','ship.png');
         this.load.image('enemy_asset','enemy.png');
-        this.load.image('star_asset','star.png')
+        this.load.image('star_asset','star.png');
+        this.load.audio('menu_music','mainmenu.mp3');
+        this.load.audio('game_start','gamestart.mp3');
+        this.load.audio('game_music','gameplay.mp3');
+        this.load.audio('meteor_hit','crash.mp3');
+        this.load.audio('star_collect','starcollect.mp3');
+        this.load.audio('game_over_music','gameover.mp3')
     }
 
     create ()
